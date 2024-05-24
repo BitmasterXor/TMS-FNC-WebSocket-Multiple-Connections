@@ -1,0 +1,89 @@
+object Form1: TForm1
+  Left = 0
+  Top = 0
+  Caption = 'Server'
+  ClientHeight = 271
+  ClientWidth = 524
+  Color = clBtnFace
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -12
+  Font.Name = 'Segoe UI'
+  Font.Style = []
+  Position = poScreenCenter
+  OnCreate = FormCreate
+  TextHeight = 15
+  object scListView1: TscListView
+    Left = 0
+    Top = 0
+    Width = 529
+    Height = 249
+    FluentUIOpaque = False
+    Columns = <
+      item
+        AutoSize = True
+        Caption = 'IP Address'
+      end
+      item
+        AutoSize = True
+        Caption = 'NickName'
+      end>
+    ExtendedColumnDraw = False
+    PopupMenu = PopupMenu1
+    TabOrder = 1
+    ViewStyle = vsReport
+    SelectionStyle = scstStyled
+    ShowFocusRect = True
+    AlternateRow = False
+    GridLines = False
+    DefaultDraw = False
+    SelectionColor = clNone
+    SelectionTextColor = clHighlightText
+  end
+  object serversocket: TTMSFNCWebSocketServer
+    Left = 24
+    Top = 40
+    Width = 26
+    Height = 26
+    Visible = True
+    AutoSyncEvents = False
+    OnBinaryDataReceived = serversocketBinaryDataReceived
+    OnDisconnect = serversocketDisconnect
+  end
+  object scStatusBar1: TscStatusBar
+    Left = 0
+    Top = 252
+    Width = 524
+    Height = 19
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clBtnText
+    Font.Height = -12
+    Font.Name = 'Segoe UI'
+    Font.Style = []
+    Panels = <
+      item
+        Text = 'Server Status: Offline!'
+        Width = 150
+      end
+      item
+        Text = 'Clients Online [0]'
+        Width = 50
+      end>
+    UseSystemFont = False
+    ExplicitLeft = 96
+    ExplicitTop = 264
+    ExplicitWidth = 0
+  end
+  object PopupMenu1: TPopupMenu
+    Left = 96
+    Top = 40
+    object S1: TMenuItem
+      Caption = 'Send To ALL'
+      OnClick = S1Click
+    end
+    object S2: TMenuItem
+      Caption = 'Send To Selected'
+      OnClick = S2Click
+    end
+  end
+end

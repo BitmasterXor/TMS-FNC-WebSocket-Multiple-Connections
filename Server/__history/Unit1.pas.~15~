@@ -1,0 +1,235 @@
+unit Unit1;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants,
+  System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.TMSFNCWebSocketCommon,
+  Vcl.TMSFNCCustomComponent, Vcl.TMSFNCWebSocketServer, Vcl.ComCtrls,
+  scControls,
+  Vcl.Menus, System.Generics.Collections,pngimage, scExtControls;
+
+type
+  TClientInfo = class
+  public
+    Nickname: string;
+    Connection: TTMSFNCWebSocketConnection;
+  end;
+
+  TForm1 = class(TForm)
+    serversocket: TTMSFNCWebSocketServer;
+    scListView1: TscListView;
+    PopupMenu1: TPopupMenu;
+    S1: TMenuItem;
+    S2: TMenuItem;
+    scStatusBar1: TscStatusBar;
+    scImage1: TscImage;
+    procedure FormCreate(Sender: TObject);
+    procedure serversocketBinaryDataReceived(Sender: TObject;
+      AConnection: TTMSFNCWebSocketConnection; const aData: TBytes;
+      AFrameType: TTMSFNCWebSocketFrameTypes);
+    procedure FormDestroy(Sender: TObject);
+    procedure S1Click(Sender: TObject);
+    procedure S2Click(Sender: TObject);
+    procedure serversocketDisconnect(Sender: TObject;
+      AConnection: TTMSFNCWebSocketConnection);
+    procedure scListView1Click(Sender: TObject);
+  private
+    FConnectedClients: TObjectList<TClientInfo>;
+    procedure BroadcastMessage(const Msg: string);
+  public
+    { Public declarations }
+  end;
+
+var
+  Form1: TForm1;
+
+implementation
+
+{$R *.dfm}
+
+procedure TForm1.FormCreate(Sender: TObject);
+begin
+  // Initialize the list of connected clients
+  FConnectedClients := TObjectList<TClientInfo>.Create;
+
+  // setup the server and have it begin listening for remote connections!
+  self.serversocket.Port := 3434;
+  self.serversocket.Active := true;
+  self.Caption := 'Server | Active On port (' +
+    inttostr(self.serversocket.Port) + ')';
+  self.scStatusBar1.Panels[0].Text := 'Server Status: Online!';
+end;
+
+procedure TForm1.FormDestroy(Sender: TObject);
+begin
+  // Free the list of connected clients
+  FConnectedClients.Free;
+end;
+
+procedure TForm1.S1Click(Sender: TObject);
+begin
+BroadcastMessage('Hello All');
+end;
+
+procedure TForm1.S2Click(Sender: TObject);
+var
+  ClientID: string;
+  Client: TClientInfo;
+begin
+  // Send message to selected client
+  if scListView1.ItemIndex <> -1 then
+  begin
+    ClientID := scListView1.Items[scListView1.ItemIndex].SubItems[0];
+      for Client in FConnectedClients do
+      begin
+        if Client.Nickname = ClientID then
+        begin
+          Client.Connection.send('Hello Just To You!');
+          Break; // Found the client, no need to continue searching
+        end;
+      end;
+  end;
+end;
+
+
+procedure TForm1.BroadcastMessage(const Msg: string);
+var
+  Client: TClientInfo;
+begin
+  // Broadcast message to all connected clients
+  for Client in FConnectedClients do
+    Client.Connection.Send(Msg);
+end;
+
+procedure TForm1.scListView1Click(Sender: TObject);
+var
+  ClientID: string;
+  Client: TClientInfo;
+begin
+  // Send message to selected client
+  if scListView1.ItemIndex <> -1 then
+  begin
+    ClientID := scListView1.Items[scListView1.ItemIndex].SubItems[0];
+      for Client in FConnectedClients do
+      begin
+        if Client.Nickname = ClientID then
+        begin
+          Client.Connection.Send('QuickINFO|');
+          Break; // Found the client, no need to continue searching
+        end;
+      end;
+  end;
+end;
+
+procedure TForm1.serversocketBinaryDataReceived(Sender: TObject;
+  AConnection: TTMSFNCWebSocketConnection; const aData: TBytes;
+  AFrameType: TTMSFNCWebSocketFrameTypes);
+var
+  sl: TStringList;
+  LI: TListItem;
+  ClientInfo: TClientInfo;
+  Stream: TMemoryStream;
+  PNGImage: TPngImage;
+  Bitmap: TBitmap;
+begin
+  sl := TStringList.Create;
+  try
+    sl.Delimiter := '|';
+    sl.StrictDelimiter := true;
+    sl.DelimitedText := TEncoding.UTF8.GetString(aData);
+
+    if sl[0] = 'NewCon' then
+    begin
+      // Add connected client to the list
+      ClientInfo := TClientInfo.Create;
+      ClientInfo.Nickname := sl[1];
+      ClientInfo.Connection := AConnection;
+      FConnectedClients.Add(ClientInfo);
+
+      // Update the list view
+      LI := scListView1.Items.Add;
+      LI.Caption := AConnection.PeerIP;
+      LI.SubItems.Add(sl[1]);
+      scStatusBar1.Panels[1].Text := 'Connected Clients: [' + IntToStr(FConnectedClients.Count) + ']';
+    end;
+  finally
+    sl.Free;
+  end;
+
+  if sl = nil then
+  begin
+  // Create a memory stream and write the received data into it
+  Stream := TMemoryStream.Create;
+  try
+    Stream.Write(aData[0], Length(aData));
+    Stream.Position := 0;
+
+    // Create a PNG image and load it from the stream
+    PNGImage := TPngImage.Create;
+    try
+      PNGImage.LoadFromStream(Stream);
+
+      // Convert the PNG image to a bitmap
+      Bitmap := TBitmap.Create;
+      try
+        Bitmap.Assign(PNGImage);
+
+        // Display the bitmap on the TImage component
+        scImage1.Picture.LoadFromStream(stream);
+      finally
+        Bitmap.Free;
+      end;
+    finally
+      PNGImage.Free;
+    end;
+  finally
+    Stream.Free;
+  end;
+end;
+end;
+
+
+procedure TForm1.serversocketDisconnect(Sender: TObject;
+  AConnection: TTMSFNCWebSocketConnection);
+var
+  I: Integer;
+  Nickname: string;
+begin
+  // Find the nickname of the disconnected client
+  for I := 0 to FConnectedClients.Count - 1 do
+  begin
+    if FConnectedClients[I].Connection = AConnection then
+    begin
+      Nickname := FConnectedClients[I].Nickname;
+      Break;
+    end;
+  end;
+
+  // Remove disconnected client from FConnectedClients
+  for I := FConnectedClients.Count - 1 downto 0 do
+  begin
+    if FConnectedClients[I].Connection = AConnection then
+      FConnectedClients.Delete(I);
+  end;
+
+  // Remove disconnected client from scListView1
+  for I := scListView1.Items.Count - 1 downto 0 do
+  begin
+    if scListView1.Items[I].SubItems[0] = Nickname then
+    begin
+      scListView1.Items.Delete(I);
+      Break; // Assuming there's only one entry for each nickname
+    end;
+  end;
+  scStatusBar1.Panels[1].Text := 'Connected Clients: [' + IntToStr(FConnectedClients.Count) + ']';
+end;
+
+
+
+
+
+
+end.
+
