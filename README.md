@@ -1,6 +1,6 @@
 <h1>Delphi TMS FNC WebSocket Server Application Multiple Connection Handling Example</h1>
 
-<p>This Delphi VCL application demonstrates a WebSocket server using the <code>TMSFNCWebSocketServer</code> component from the TMS FNC libraries. The server can handle multiple client connections, broadcast messages, and send targeted messages.</p>
+<p>This Delphi VCL application demonstrates a WebSocket server using the <code>TMSFNCWebSocketServer</code> component from the TMS FNC libraries. The server can handle multiple client connections, broadcast messages, and send targeted messages to specific Clients.</p>
 
 <!-- Replace 'screenshot.png' with the path to your actual image file -->
 <p align="center">
