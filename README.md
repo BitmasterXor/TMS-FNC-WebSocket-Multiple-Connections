@@ -34,8 +34,10 @@
 <h2>Dependencies</h2>
 <ul>
   <li><code>Delphi RAD Studio:</code> Required for compiling and running the project.</li>
+  <li><code>TMS FNC Core:</code> Includes the <code>MAIN CLASSES</code> required for all TMS FNC Libraries to function.</li>
+  <li><code>TMS FNC Core Location:</code> Find the FNC CORE library in this zip file: FNC Core.7z </li>
   <li><code>TMS FNC Components:</code> Includes the <code>TTMSFNCWebSocketServer</code> component for WebSocket functionality.</li>
-  <li><code>PNGImage:</code> For handling PNG image files.</li>
+  <li><code>TMS FNC Components Location:</code> Find the websocket components in this zip file: FNC Websocket Library.7z </li>
 </ul>
 
 <h2>License</h2>
