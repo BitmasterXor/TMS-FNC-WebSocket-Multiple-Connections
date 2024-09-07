@@ -1,6 +1,6 @@
 <h1>Delphi TMS FNC WebSocket Server Application Multiple Connection Handling Example</h1>
 
-<p>This Delphi VCL application demonstrates a WebSocket server using the <code>TMSFNCWebSocketServer</code> component from the TMS FNC libraries. The server can handle multiple client connections, broadcast messages, and send targeted messages. It also supports image display and client information management.</p>
+<p>This Delphi VCL application demonstrates a WebSocket server using the <code>TMSFNCWebSocketServer</code> component from the TMS FNC libraries. The server can handle multiple client connections, broadcast messages, and send targeted messages.</p>
 
 <!-- Replace 'screenshot.png' with the path to your actual image file -->
 <p align="center">
@@ -12,16 +12,13 @@
   <li><strong>Client Management:</strong> Tracks connected clients and updates the list view.</li>
   <li><strong>Broadcast Messaging:</strong> Sends messages to all connected clients.</li>
   <li><strong>Targeted Messaging:</strong> Sends messages to a specific client selected from the list view.</li>
-  <li><strong>Image Handling:</strong> Receives and displays images sent by clients.</li>
-  <li><strong>Client Information:</strong> Displays additional information about connected clients.</li>
 </ul>
 
 <h2>Components</h2>
 <ul>
   <li><code>TTMSFNCWebSocketServer:</code> Manages WebSocket server communications.</li>
-  <li><code>TListView (scListView1, scListView2):</code> Displays connected clients and additional information.</li>
+  <li><code>TListView (scListView1, scListView2):</code> Displays connected clients and additional information. (Cilent Nickname)</li>
   <li><code>TStatusBar (scStatusBar1):</code> Shows server status and connected client count.</li>
-  <li><code>TImage (scImage1):</code> Displays received images.</li>
   <li><code>TPopupMenu (PopupMenu1):</code> Provides options for broadcasting messages or sending targeted messages.</li>
 </ul>
 
@@ -31,7 +28,6 @@
   <li><strong>Connect Clients:</strong> Clients can connect to the server using the specified port (3434).</li>
   <li><strong>Broadcast Message:</strong> Use the context menu option <code>S1</code> to send a message to all connected clients.</li>
   <li><strong>Send to Selected Client:</strong> Use the context menu option <code>S2</code> to send a message to a specific client selected from the <code>TListView</code>.</li>
-  <li><strong>Receive and Display Image:</strong> The server will display images sent by clients in the <code>TImage</code> component.</li>
   <li><strong>View Client Information:</strong> Click on a client in <code>scListView1</code> to view and update their information in <code>scListView2</code>.</li>
 </ol>
 
